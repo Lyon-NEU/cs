@@ -8,27 +8,26 @@ import java.util.*;
 public class HMM {
 	private int M;     //number of observation symbols
 	private int N;     //number of hidden states
-	private int [][]transmit;  //transition probability of going from  state i at time t to state j at time t+1 
-	private int [][]generate;   // probability of observation symbol k at time i
-	private int[]pi;         //initial probability
-	public HMM(int m,int n){
-		this.M=m;
-		this.N=n;
+	private float [][]transmit;  //transition probability of going from  state i at time t to state j at time t+1 
+	private float [][]generate;   // probability of observation symbol k at time i
+	private float[]pi;         //initial probability
+	public HMM(){
+
 	}
 	/*
 	 * read model from file
 	 * @param filename: file to be read
 	 * @parma hm:  save model 
 	 * */
-	public void readHMM(String filename,HMM hm){
+	public static void readHMM(String filename,HMM hm){
 		BufferedReader in;
 		try{
-			in=new BufferedReader(new FileReader(new File("")));
+			in=new BufferedReader(new FileReader(new File(filename)));
 			String line;	
 			line=in.readLine();
 			if(line.startsWith("M="))
 			{
-				hm.M=Integer.parseInt(line.substring(line.indexOf('='))+1);
+				hm.M=Integer.parseInt(line.substring(line.indexOf("= ")+2).trim());
 			}else{
 				System.out.println("data format error!");
 				return;
@@ -36,11 +35,14 @@ public class HMM {
 			line=in.readLine();
 			if(line.startsWith("N="))
 			{
-				hm.N=Integer.parseInt(line.substring(line.indexOf('='))+1);
+				int index=line.indexOf("= ");
+				if(-1!=index)
+					hm.N=Integer.parseInt(line.substring(index+2).trim());
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
+			hm.transmit=new float[hm.N][hm.N];
 			line=in.readLine();
 			if(line.startsWith("A"))
 			{
@@ -50,12 +52,13 @@ public class HMM {
 					line=in.readLine();
 					String[] dtmp=line.split(" ");
 					for(int j=0;j<dtmp.length;j++)
-						hm.transmit[i][j]=Integer.parseInt(dtmp[j]);
+						hm.transmit[i][j]=Float.parseFloat(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
+			hm.generate=new float[hm.N][hm.M];
 			line=in.readLine();
 			if(line.startsWith("B"))
 			{
@@ -63,14 +66,15 @@ public class HMM {
 				for(int i=0;i<hm.N;i++)
 				{
 					line=in.readLine();
-					String[] dtmp=line.split(" ");
+					String[] dtmp=line.split("\\s+");  //split("") wll save empty string, use regex;
 					for(int j=0;j<dtmp.length;j++)
-						hm.generate[i][j]=Integer.parseInt(dtmp[j]);
+						hm.generate[i][j]=Float.parseFloat(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
+			hm.pi=new float[hm.N];
 			line=in.readLine();
 			if(line.startsWith("pi"))
 			{
@@ -78,7 +82,7 @@ public class HMM {
 				line=in.readLine();
 				String[]pp=line.split(" ");
 				for(int i=0;i<hm.N;i++)
-					hm.pi[i]=Integer.parseInt(pp[i]);
+					hm.pi[i]=Float.parseFloat(pp[i]);
 			}else{
 				System.out.println("data format error!");
 				return;
@@ -92,7 +96,7 @@ public class HMM {
 	 * @param filename: file to save model
 	 * @param hm: model to be write
 	 */
-	public void writeHMM(String filename,HMM hm){
+	public static void writeHMM(String filename,HMM hm){
 		BufferedReader out;
 		try{
 			out=new BufferedReader(new FileReader(new File(""))); //write model params into file
@@ -102,7 +106,7 @@ public class HMM {
 		}
 	}
 	//print the model
-	public void printHMM(HMM hm)
+	public static void printHMM(HMM hm)
 	{
 		System.out.println("----------------------------------------");
 		System.out.println("N(number of hidden state: )"+hm.N);
@@ -110,13 +114,20 @@ public class HMM {
 		System.out.println("transtion array:");
 		for(int i=0;i<hm.N;i++)
 			for(int j=0;j<hm.N;j++)
-				System.out.print("   "+hm.generate[i][j]+(j==hm.N-1?' ':"\n"));
-		System.out.println("launch array:");
+				System.out.print("   "+hm.transmit[i][j]+(j==hm.N-1?'\n':" "));
+		System.out.println("\nlaunch array:");
 		for(int i=0;i<hm.N;i++)
 			for(int j=0;j<hm.M;j++)
-				System.out.println("   "+hm.generate[i][j]+(j==hm.M-1?' ':"\n"));
+				System.out.print("   "+hm.generate[i][j]+(j==hm.M-1?'\n':" "));
+		System.out.println("Initial Array:");
+		for(float pt: hm.pi)
+			System.out.print(pt);
+		System.out.println("\n----------------------end---------------------------");
 	}
 	public static void main(String[] args){
 		System.out.println("----------A Hidden Markov Model-------------");
+		HMM hm=new HMM();
+		readHMM("test\\test.hmm",hm);
+		printHMM(hm);
 	}
 }
