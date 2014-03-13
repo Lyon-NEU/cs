@@ -6,13 +6,27 @@ package hmm;
 import java.io.*;
 import java.util.*;
 public class HMM {
-	private int M;     //number of observation symbols
-	private int N;     //number of hidden states
-	private float [][]transmit;  //transition probability of going from  state i at time t to state j at time t+1 
-	private float [][]generate;   // probability of observation symbol k at time i
-	private float[]pi;         //initial probability
+	public int M;     //number of observation symbols
+	public int N;     //number of hidden states
+	public double [][]A;  //transition probability of going from  state i at time t to state j at time t+1 
+	public double [][]B;   // probability of observation symbol k at time i
+	public double[]pi;         //initial probability
 	public HMM(){
 
+	}
+	/*
+	 * return number of observation symbols
+	 */
+	public int getM()
+	{
+		return M;
+	}
+	/*
+	 * return number of hidden states
+	 */
+	public int getN()
+	{
+		return N;
 	}
 	/*
 	 * read model from file
@@ -42,7 +56,7 @@ public class HMM {
 				System.out.println("data format error!");
 				return;
 			}
-			hm.transmit=new float[hm.N][hm.N];
+			hm.A=new double[hm.N][hm.N];
 			line=in.readLine();
 			if(line.startsWith("A"))
 			{
@@ -52,13 +66,13 @@ public class HMM {
 					line=in.readLine();
 					String[] dtmp=line.split(" ");
 					for(int j=0;j<dtmp.length;j++)
-						hm.transmit[i][j]=Float.parseFloat(dtmp[j]);
+						hm.A[i][j]=Double.parseDouble(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
-			hm.generate=new float[hm.N][hm.M];
+			hm.B=new double[hm.N][hm.M];
 			line=in.readLine();
 			if(line.startsWith("B"))
 			{
@@ -68,13 +82,13 @@ public class HMM {
 					line=in.readLine();
 					String[] dtmp=line.split("\\s+");  //split("") wll save empty string, use regex;
 					for(int j=0;j<dtmp.length;j++)
-						hm.generate[i][j]=Float.parseFloat(dtmp[j]);
+						hm.B[i][j]=Double.parseDouble(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
-			hm.pi=new float[hm.N];
+			hm.pi=new double[hm.N];
 			line=in.readLine();
 			if(line.startsWith("pi"))
 			{
@@ -82,7 +96,7 @@ public class HMM {
 				line=in.readLine();
 				String[]pp=line.split(" ");
 				for(int i=0;i<hm.N;i++)
-					hm.pi[i]=Float.parseFloat(pp[i]);
+					hm.pi[i]=Double.parseDouble(pp[i]);
 			}else{
 				System.out.println("data format error!");
 				return;
@@ -114,13 +128,13 @@ public class HMM {
 		System.out.println("transtion array:");
 		for(int i=0;i<hm.N;i++)
 			for(int j=0;j<hm.N;j++)
-				System.out.print("   "+hm.transmit[i][j]+(j==hm.N-1?'\n':" "));
+				System.out.print("   "+hm.A[i][j]+(j==hm.N-1?'\n':" "));
 		System.out.println("\nlaunch array:");
 		for(int i=0;i<hm.N;i++)
 			for(int j=0;j<hm.M;j++)
-				System.out.print("   "+hm.generate[i][j]+(j==hm.M-1?'\n':" "));
+				System.out.print("   "+hm.B[i][j]+(j==hm.M-1?'\n':" "));
 		System.out.println("Initial Array:");
-		for(float pt: hm.pi)
+		for(double pt: hm.pi)
 			System.out.print(pt);
 		System.out.println("\n----------------------end---------------------------");
 	}
