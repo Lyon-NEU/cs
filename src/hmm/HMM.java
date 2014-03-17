@@ -33,7 +33,7 @@ public class HMM {
 	 * @param filename: file to be read
 	 * @parma hm:  save model 
 	 * */
-	public static void readHMM(String filename,HMM hm){
+	public  void readHMM(String filename){
 		BufferedReader in;
 		try{
 			in=new BufferedReader(new FileReader(new File(filename)));
@@ -41,7 +41,7 @@ public class HMM {
 			line=in.readLine();
 			if(line.startsWith("M="))
 			{
-				hm.M=Integer.parseInt(line.substring(line.indexOf("= ")+2).trim());
+				this.M=Integer.parseInt(line.substring(line.indexOf("= ")+2).trim());
 			}else{
 				System.out.println("data format error!");
 				return;
@@ -51,52 +51,52 @@ public class HMM {
 			{
 				int index=line.indexOf("= ");
 				if(-1!=index)
-					hm.N=Integer.parseInt(line.substring(index+2).trim());
+					this.N=Integer.parseInt(line.substring(index+2).trim());
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
-			hm.A=new double[hm.N][hm.N];
+			this.A=new double[this.N][this.N];
 			line=in.readLine();
 			if(line.startsWith("A"))
 			{
 				//read transition array
-				for(int i=0;i<hm.N;i++)
+				for(int i=0;i<this.N;i++)
 				{
 					line=in.readLine();
 					String[] dtmp=line.split(" ");
 					for(int j=0;j<dtmp.length;j++)
-						hm.A[i][j]=Double.parseDouble(dtmp[j]);
+						this.A[i][j]=Double.parseDouble(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
-			hm.B=new double[hm.N][hm.M];
+			this.B=new double[this.N][this.M];
 			line=in.readLine();
 			if(line.startsWith("B"))
 			{
 				//read observation probability
-				for(int i=0;i<hm.N;i++)
+				for(int i=0;i<this.N;i++)
 				{
 					line=in.readLine();
 					String[] dtmp=line.split("\\s+");  //split("") wll save empty string, use regex;
 					for(int j=0;j<dtmp.length;j++)
-						hm.B[i][j]=Double.parseDouble(dtmp[j]);
+						this.B[i][j]=Double.parseDouble(dtmp[j]);
 				}
 			}else{
 				System.out.println("data format error!");
 				return;
 			}
-			hm.pi=new double[hm.N];
+			this.pi=new double[this.N];
 			line=in.readLine();
 			if(line.startsWith("pi"))
 			{
 				//read initial probability
 				line=in.readLine();
 				String[]pp=line.split(" ");
-				for(int i=0;i<hm.N;i++)
-					hm.pi[i]=Double.parseDouble(pp[i]);
+				for(int i=0;i<this.N;i++)
+					this.pi[i]=Double.parseDouble(pp[i]);
 			}else{
 				System.out.println("data format error!");
 				return;
@@ -110,7 +110,7 @@ public class HMM {
 	 * @param filename: file to save model
 	 * @param hm: model to be write
 	 */
-	public static void writeHMM(String filename,HMM hm){
+	public  void writeHMM(String filename){
 		BufferedReader out;
 		try{
 			out=new BufferedReader(new FileReader(new File(""))); //write model params into file
@@ -120,28 +120,28 @@ public class HMM {
 		}
 	}
 	//print the model
-	public static void printHMM(HMM hm)
+	public  void printHMM()
 	{
 		System.out.println("----------------------------------------");
-		System.out.println("N(number of hidden state: )"+hm.N);
-		System.out.println("Number of observation symbols:"+hm.M);
+		System.out.println("N(number of hidden state: )"+this.N);
+		System.out.println("Number of observation symbols:"+this.M);
 		System.out.println("transtion array:");
-		for(int i=0;i<hm.N;i++)
-			for(int j=0;j<hm.N;j++)
-				System.out.print("   "+hm.A[i][j]+(j==hm.N-1?'\n':" "));
+		for(int i=0;i<this.N;i++)
+			for(int j=0;j<this.N;j++)
+				System.out.print("   "+this.A[i][j]+(j==this.N-1?'\n':" "));
 		System.out.println("\nlaunch array:");
-		for(int i=0;i<hm.N;i++)
-			for(int j=0;j<hm.M;j++)
-				System.out.print("   "+hm.B[i][j]+(j==hm.M-1?'\n':" "));
+		for(int i=0;i<this.N;i++)
+			for(int j=0;j<this.M;j++)
+				System.out.print("   "+this.B[i][j]+(j==this.M-1?'\n':" "));
 		System.out.println("Initial Array:");
-		for(double pt: hm.pi)
+		for(double pt: this.pi)
 			System.out.print(pt);
 		System.out.println("\n----------------------end---------------------------");
 	}
 	public static void main(String[] args){
 		System.out.println("----------A Hidden Markov Model-------------");
 		HMM hm=new HMM();
-		readHMM("test\\test.hmm",hm);
-		printHMM(hm);
+		hm.readHMM("test\\test.hmm");
+		hm.printHMM();
 	}
 }

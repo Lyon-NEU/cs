@@ -1,6 +1,7 @@
 // model evaluate, backward and forwards algorithm
 package hmm;
-
+import java.io.*;
+import java.util.*;
 public class Evaluate {
 	private HMM hm;
 	private String strPath;
@@ -8,7 +9,7 @@ public class Evaluate {
 	 * implement of forward algorithm 
 	 * @param hm: HMM model
 	 */
-	public double forward(HMM hm,int T,int []O,double[][]alpha){
+	public static double forward(HMM hm,int T,Integer []O,double[][]alpha){
 		int i,j;   /*state indices*/
 		int t;     /*time index*/
 		double sum;  /*partial sum*/
@@ -25,7 +26,7 @@ public class Evaluate {
                     for (i = 0; i < hm.N; i++)
                             sum += alpha[t][i]* (hm.A[i][j]);
 
-                    alpha[t+1][j] = sum*(hm.B[j][O[t+1]]);
+                    alpha[t+1][j] = sum*(hm.B[j][O[t+1]-1]);
             }
         }
 		
@@ -41,7 +42,7 @@ public class Evaluate {
 	 * @hm: HMM model
 	 * T: time , 1~T
 	 */
-	public double backwrad(HMM hm,int T,int[]O,double[][]beta ){
+	public static double backwrad(HMM hm,int T,int[]O,double[][]beta ){
 		int i,j;  /*state indices*/
 		int t;  /*time index*/
 		double prob=0.0;
@@ -67,6 +68,30 @@ public class Evaluate {
 		return prob;
 	}
 	public static void main(String[]args){
+		/*1. read model from file*/
+		HMM test=new HMM();
+		test.readHMM("F:\\workspace\\HMM\\test\\test.HMM");
+		/*2. read sequences*/
+		/*BufferedReader in;
+		String path=System.getProperty("user.dir");
+		try{
+			
+			in=new BufferedReader(new FileReader(new File("")));
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+		}*/
+		System.out.println("Please input test sequences:");
+		Scanner in=new Scanner(System.in);
+		String[]seq=in.nextLine().split(" ");
+		Integer []O=new Integer[seq.length];
+		for(int i=0;i<seq.length;i++)
+			O[i]=Integer.parseInt(seq[i]);
+		/*3. cal probability*/
+		double [][]alpha=new double[seq.length][test.N];
+		double prob=0.0;
+		prob=forward(test,seq.length,O,alpha);
 		
+		/**/
+		System.out.printf("forward probability: %f",prob);
 	}
 }
