@@ -6,8 +6,8 @@ package hmm;
 import java.io.*;
 import java.util.*;
 public class HMM {
-	public int M;     //number of observation symbols
-	public int N;     //number of hidden states
+	private int M;     //number of observation symbols
+	private int N;     //number of hidden states
 	public double [][]A;  //transition probability of going from  state i at time t to state j at time t+1 
 	public double [][]B;   // probability of observation symbol k at time i
 	public double[]pi;         //initial probability
